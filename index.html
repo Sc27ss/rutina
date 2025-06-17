@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Rutina de Gimnasio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            min-height: 100vh;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #333333;
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 2px solid #00d478;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .day-selector {
+            padding: 40px;
+            text-align: center;
+            background: #2a2a2a;
+        }
+
+        .day-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .day-btn {
+            background: #333333;
+            color: white;
+            border: 1px solid #00d478;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 180px;
+        }
+
+        .day-btn:hover {
+            background: #00d478;
+            color: #1a1a1a;
+            transform: translateY(-2px);
+        }
+
+        .day-btn.active {
+            background: #00d478;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .workout-content {
+            display: none;
+            padding: 0 40px 40px;
+            background: #2a2a2a;
+        }
+
+        .workout-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section {
+            margin-bottom: 24px;
+            background: #333333;
+            border-radius: 8px;
+            overflow: hidden;
+            border-left: 3px solid #00d478;
+        }
+
+        .section.warmup { border-left-color: #ff8c00; }
+        .section.chest { border-left-color: #00d478; }
+        .section.back { border-left-color: #00d478; }
+        .section.shoulders { border-left-color: #00d478; }
+        .section.arms { border-left-color: #00d478; }
+        .section.legs { border-left-color: #00d478; }
+        .section.glutes { border-left-color: #00d478; }
+        .section.core { border-left-color: #00d478; }
+
+        .section-header {
+            padding: 20px;
+            background: #3a3a3a;
+            border-bottom: 1px solid #444444;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #00d478;
+            margin-bottom: 5px;
+        }
+
+        .section-subtitle {
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+
+        .exercises {
+            padding: 20px;
+        }
+
+        .exercise {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #3a3a3a;
+            border-radius: 6px;
+            border: 1px solid #444444;
+            transition: all 0.2s ease;
+        }
+
+        .exercise:hover {
+            border-color: #00d478;
+            background: #404040;
+        }
+
+        .exercise-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .exercise-details {
+            margin-bottom: 12px;
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+
+        .posture {
+            background: #2a4a3a;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            border-left: 3px solid #00d478;
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .posture strong {
+            color: #00d478;
+        }
+
+        .sets-reps {
+            display: inline-block;
+            background: #00d478;
+            color: #1a1a1a;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 4px 0;
+        }
+
+        .weight-info {
+            color: #aaaaaa;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .tips {
+            background: #333333;
+            border: 1px solid #00d478;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .tips h3 {
+            color: #00d478;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .tips ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips li {
+            margin: 8px 0;
+            padding-left: 16px;
+            position: relative;
+            color: #ffffff;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .tips li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #00d478;
+            font-weight: bold;
+        }
+
+        .tips strong {
+            color: #00d478;
+        }
+
+        @media (max-width: 768px) {
+            .day-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .day-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .day-selector, .workout-content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏋️ MI RUTINA DE GIMNASIO</h1>
+            <p>Selecciona tu día de entrenamiento y sigue tu rutina completa</p>
+        </div>
+
+        <div class="day-selector">
+            <div class="day-buttons">
+                <button class="day-btn" onclick="showWorkout('dayA')">
+                    🅰️ DÍA A - TREN SUPERIOR
+                </button>
+                <button class="day-btn" onclick="showWorkout('dayB')">
+                    🅱️ DÍA B - TREN INFERIOR
+                </button>
+            </div>
+        </div>
+
+        <!-- DÍA A - TREN SUPERIOR -->
+        <div id="dayA" class="workout-content">
+            <div class="section warmup">
+                <div class="section-header">
+                    <div class="section-title">🔥 CALENTAMIENTO</div>
+                    <div class="section-subtitle">10-15 minutos</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">Caminadora o Bicicleta</div>
+                        <div class="sets-reps">10 min a ritmo medio</div>
+                    </div>
+                    <div class="exercise">
+                        <div class="exercise-name">Movilidad de hombros y brazos</div>
+                        <div class="exercise-details">Círculos, estiramientos dinámicos</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section chest">
+                <div class="section-header">
+                    <div class="section-title">🏋️‍♂️ PECHO</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">1. Press de pecho en máquina (Chest Press)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Espalda pegada al respaldo, pies planos, manos a la altura del pecho, codos abiertos a 45°.
+                        </div>
+                        <div class="sets-reps">4x10-12</div>
+                        <div class="weight-info">Peso: empieza con 15-25 kg, sube según tu fuerza.</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">2. Aperturas en máquina (Pec Deck)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Espalda recta, brazos semi flexionados, junta los brazos como si abrazaras un barril.
+                        </div>
+                        <div class="sets-reps">3x12-15</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">3. Fondos asistidos (Máquina de dips)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Espalda ligeramente inclinada adelante, baja despacio.
+                        </div>
+                        <div class="sets-reps">3x8-10</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section back">
+                <div class="section-header">
+                    <div class="section-title">💪 ESPALDA</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">4. Jalón al pecho (Lat Pulldown)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Agarre ancho, espalda recta, baja la barra hasta el pecho con control.
+                        </div>
+                        <div class="sets-reps">4x10-12</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">5. Remo sentado (Seated Row)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Espalda recta, no te eches para atrás, tira con los codos.
+                        </div>
+                        <div class="sets-reps">4x10-12</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">6. Pull-over en máquina (Pullover Machine)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Espalda pegada, brazos estirados, lleva hacia adelante y atrás como si "abrazaras el aire".
+                        </div>
+                        <div class="sets-reps">3x12</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section shoulders">
+                <div class="section-header">
+                    <div class="section-title">🧱 HOMBROS</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">7. Press de hombros (Shoulder Press máquina)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Espalda recta, manijas a nivel orejas, empuja sin extender del todo.
+                        </div>
+                        <div class="sets-reps">3x10</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">8. Elevaciones laterales con mancuernas</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Ligeramente inclinado, codos un poco doblados, levanta hasta nivel hombro.
+                        </div>
+                        <div class="sets-reps">3x12-15</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">9. Elevación frontal con mancuernas</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Brazos rectos, sube una o dos mancuernas al frente a la altura del hombro.
+                        </div>
+                        <div class="sets-reps">3x12</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section arms">
+                <div class="section-header">
+                    <div class="section-title">🌀 BRAZOS</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">10. Curl bíceps con barra EZ o máquina</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Codos pegados al torso, subí lento, bajá más lento.
+                        </div>
+                        <div class="sets-reps">3x12</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">11. Curl martillo con mancuernas</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Palmas hacia ti, subí con control.
+                        </div>
+                        <div class="sets-reps">3x10</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">12. Extensión de tríceps en polea (con cuerda o barra)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Codos fijos, empuja con control.
+                        </div>
+                        <div class="sets-reps">3x12</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">13. Patada de tríceps con mancuerna</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Inclinado adelante, codo fijo arriba, estirá atrás.
+                        </div>
+                        <div class="sets-reps">3x12</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section core">
+                <div class="section-header">
+                    <div class="section-title">CORE (Opcional)</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">Crunch en máquina o colchoneta</div>
+                        <div class="sets-reps">3x20</div>
+                    </div>
+                    <div class="exercise">
+                        <div class="exercise-name">Plancha</div>
+                        <div class="sets-reps">3x30-60 seg</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DÍA B - TREN INFERIOR -->
+        <div id="dayB" class="workout-content">
+            <div class="section warmup">
+                <div class="section-header">
+                    <div class="section-title">🚴‍♂️ CALENTAMIENTO</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">Bicicleta</div>
+                        <div class="sets-reps">10 min</div>
+                    </div>
+                    <div class="exercise">
+                        <div class="exercise-name">Movilidad de tobillos, cadera y rodillas</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section legs">
+                <div class="section-header">
+                    <div class="section-title">🦵 CUÁDRICEPS + GLÚTEOS</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">1. Sentadilla en máquina Smith</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Pies ligeramente adelante, baja hasta que tus muslos estén paralelos.
+                        </div>
+                        <div class="sets-reps">4x10</div>
+                        <div class="weight-info">Peso inicial: solo la barra o 10-20 kg por lado</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">2. Prensa de piernas (Leg Press 45°)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Pies al ancho de hombros, baja sin que las rodillas pasen tu pecho.
+                        </div>
+                        <div class="sets-reps">4x12</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">3. Extensiones de piernas (Leg Extension)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Espalda recta, agarra los manillares, sube y baja lento.
+                        </div>
+                        <div class="sets-reps">3x15</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section back">
+                <div class="section-header">
+                    <div class="section-title">🔙 ISQUIOTIBIALES + GLÚTEO</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">4. Curl femoral acostado (Leg Curl)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Caderas apoyadas, pies debajo del rodillo, flexiona lento.
+                        </div>
+                        <div class="sets-reps">4x12</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">5. Peso muerto rumano con mancuernas</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Espalda recta, piernas casi rectas, baja hasta la tibia y sube con los glúteos.
+                        </div>
+                        <div class="sets-reps">3x10</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section glutes">
+                <div class="section-header">
+                    <div class="section-title">🍑 GLÚTEO Y CADERA</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">6. Abducción de cadera en máquina (Abductora)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Espalda recta, abre controlado, no rebotes.
+                        </div>
+                        <div class="sets-reps">4x15</div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-name">7. Patada de glúteo en máquina (Glute Kickback)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Apoya el pecho, patea hacia atrás como empujando una puerta.
+                        </div>
+                        <div class="sets-reps">3x12 por pierna</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section legs">
+                <div class="section-header">
+                    <div class="section-title">🦶 GEMELOS</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">8. Elevación de talones en máquina (Calf Raise)</div>
+                        <div class="posture">
+                            <strong>Postura:</strong> Empuja solo con los pies, subí al máximo, bajá con control.
+                        </div>
+                        <div class="sets-reps">4x15-20</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section core">
+                <div class="section-header">
+                    <div class="section-title">CORE (Opcional)</div>
+                </div>
+                <div class="exercises">
+                    <div class="exercise">
+                        <div class="exercise-name">Crunches</div>
+                        <div class="sets-reps">3x20</div>
+                    </div>
+                    <div class="exercise">
+                        <div class="exercise-name">Plancha lateral</div>
+                        <div class="sets-reps">3x30 seg por lado</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tips">
+            <h3>📝 TIPS GENERALES</h3>
+            <ul>
+                <li><strong>Descanso entre series:</strong> 60 a 90 segundos.</li>
+                <li><strong>Peso:</strong> Que te cueste entre la 10 y la 12, pero que termines con buena técnica.</li>
+                <li><strong>Postura siempre:</strong> Espalda recta, sin impulso, controla cada fase del movimiento.</li>
+                <li><strong>Hidratación:</strong> Lleva agua y toma entre ejercicios.</li>
+                <li><strong>Progresión:</strong> Subí peso cada 2-3 semanas si ves que podés hacer más repeticiones.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function showWorkout(day) {
+            // Ocultar todas las rutinas
+            const workouts = document.querySelectorAll('.workout-content');
+            workouts.forEach(workout => {
+                workout.classList.remove('active');
+            });
+
+            // Remover clase active de todos los botones
+            const buttons = document.querySelectorAll('.day-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Mostrar la rutina seleccionada
+            document.getElementById(day).classList.add('active');
+            
+            // Agregar clase active al botón correspondiente
+            if (day === 'dayA') {
+                buttons[0].classList.add('active');
+            } else {
+                buttons[1].classList.add('active');
+            }
+
+            // Scroll suave hacia el contenido
+            document.getElementById(day).scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Función para agregar efectos de hover a las tarjetas de ejercicios
+        document.addEventListener('DOMContentLoaded', function() {
+            const exercises = document.querySelectorAll('.exercise');
+            
+            exercises.forEach(exercise => {
+                exercise.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(10px) scale(1.02)';
+                });
+                
+                exercise.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
